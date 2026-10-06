@@ -17,12 +17,6 @@
 <style>
 :root{--teal:#03474c;--teal2:#04656b;--or:#fb7400;--bg:#f5f8f8;--card:#fff;--tx:#0d2b2d;--mu:#587173;--bd:#d8e3e3}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif}
-header{background:#fff;border-bottom:3px solid var(--or);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
-header img{height:46px}header button{background:var(--teal);color:#fff;border:0;border-radius:22px;padding:9px 16px;font-weight:600}
-.hero{background:var(--teal);color:#fff;display:grid;grid-template-columns:1.2fr 1fr;align-items:end;gap:0;overflow:hidden;min-height:300px}
-.hero div{padding:32px 20px}.hero h1{font-size:clamp(26px,6vw,46px);line-height:1.1;margin:0 0 12px}
-.hero img{width:100%;height:100%;max-height:420px;object-fit:cover;object-position:top}
-a.cta,button.p{background:var(--or);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700;font-size:15px;text-decoration:none;display:inline-block;cursor:pointer}
 main{max-width:900px;margin:0 auto;padding:20px 16px 80px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
@@ -33,17 +27,39 @@ label{font-size:13px;color:var(--mu)}.row{display:flex;justify-content:space-bet
 .tot{font-weight:800;font-size:18px;border-top:1px solid var(--bd);padding-top:8px}
 button.s{background:#fff;color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer}
 .tag{background:var(--teal);color:#fff;border-radius:10px;padding:2px 9px;font-size:12px}
-footer{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;font-size:14px}footer img{height:50px;background:#fff;border-radius:8px;padding:4px}
 #dr{position:fixed;inset:0;background:#0007;display:none;justify-content:flex-end;z-index:9}#dr.on{display:flex}
 #dr aside{background:var(--bg);width:min(440px,100%);height:100%;overflow:auto;padding:16px}
-@media(max-width:640px){.hero{grid-template-columns:1fr}.hero img{max-height:300px}}
 :focus-visible{outline:3px solid var(--or);outline-offset:2px}
-</style>
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+a.cta,button.p{background:var(--or);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700;font-size:15px;text-decoration:none;display:inline-block;cursor:pointer}
+.tb{background:var(--teal);color:#fff;font-size:12px;padding:6px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.tb b{font-weight:600}
+.hd{background:#fff;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--bd)}
+.hd img{height:48px}.hd .sr{flex:1;min-width:150px;display:flex}.hd .sr input{margin:0;border-radius:8px 0 0 8px}.hd .sr span{background:var(--or);color:#fff;padding:0 14px;display:grid;place-items:center;border-radius:0 8px 8px 0}
+.hd button{background:#fff;border:0;color:var(--tx);font-weight:600;font-size:14px;cursor:pointer}#bc{background:var(--teal);color:#fff;border-radius:22px;padding:9px 14px}
+.nv{background:#fff;display:flex;gap:18px;padding:8px 16px;overflow-x:auto;white-space:nowrap;font-size:14px;border-bottom:1px solid var(--bd)}.nv a{color:var(--tx);text-decoration:none;font-weight:600}.nv a.f{background:var(--or);color:#fff;padding:6px 12px;border-radius:6px}
+.hero{background:linear-gradient(120deg,#022f33,var(--teal) 60%,#04656b);color:#fff;display:grid;grid-template-columns:1.1fr 1fr;align-items:end;overflow:hidden;min-height:380px}
+.hero>div{padding:36px 24px}.hero h1{font-size:clamp(30px,6vw,52px);line-height:1.08;margin:6px 0 12px}.hero h1 em{color:var(--or);font-style:normal}.hero .hm{width:100%;max-height:440px;object-fit:contain;object-position:bottom;display:block}
+.ob{border:2px solid #fff;color:#fff;border-radius:10px;padding:9px 16px;font-weight:700;text-decoration:none;display:inline-block;margin-left:8px}
+.tr{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font-size:13px}.tr div{display:flex;gap:8px;align-items:center}.tr small{display:block;opacity:.75}
+.sec{max-width:1000px;margin:0 auto;padding:22px 16px}.sec h2{margin:0;border-left:4px solid var(--or);padding-left:10px}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:12px}.cats button{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px 6px;font-weight:700;cursor:pointer;color:var(--tx)}.cats span{display:block;font-size:34px}
+.hr{position:absolute;right:20px;top:20px;background:#fff;border:0;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer}.card{position:relative}
+.bn{background:linear-gradient(110deg,var(--teal),#04656b 55%,var(--or));color:#fff;border-radius:14px;padding:24px;margin:8px 0}.bn h3{margin:4px 0;font-size:26px}
+.wy{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;text-align:center;margin-top:12px}.wy span{font-size:28px}
+.sv{background:var(--teal);color:#fff;padding:26px 16px}.sv .in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1.4fr;gap:20px;align-items:center}.sv h2 em{color:var(--or);font-style:normal}
+.sv .g4{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sv .g4 div{border:1px solid #ffffff44;border-radius:10px;padding:12px;text-align:center;font-size:14px}.sv .g4 span{font-size:26px;display:block}
+.bt{background:linear-gradient(90deg,#022f33,var(--teal));color:#fff;padding:20px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt b{font-size:22px}
+footer{background:#022f33;color:#fff;padding:26px 16px;font-size:14px}footer .in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}footer img{height:50px;background:#fff;border-radius:8px;padding:4px}footer h4{margin:0 0 8px}footer a{color:#ffffffaa}
+@media(max-width:700px){.hero,.sv .in{grid-template-columns:1fr}.hero .hm{max-height:300px}.tb{display:none}}
+.card{box-shadow:0 2px 8px #0a30321a;transition:transform .15s}.grid .card:hover{transform:translateY(-3px)}.cats button:hover{border-color:var(--or)}.sec h2{font-size:22px}.wy>div{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:14px 8px}.bn{box-shadow:0 4px 14px #0a303233}</style>
 </head>
 <body>
-<header><img src="logo.webp" alt="Only Business"><button id="bc">Carrinho (0)</button></header>
+<div class="tb"><span>🛒 Loja 100% online · 📍 Entrega em Angola</span><b>Bem-vindo à Only Business!</b><span>💬 +244 954 627 822</span></div>
+<div class="hd"><a href="#"><img src="logo.webp" alt="Only Business"></a><div class="sr"><input id="q" placeholder="O que está à procura?" aria-label="Pesquisar"><span>🔍</span></div><button data-favs>♡ Favoritos</button><button id="bc">Carrinho (0)</button></div>
+<nav class="nv"><a class="f" href="#categorias">☰ Todas as Categorias</a><a href="#">Início</a><a href="#produtos">Produtos</a><a href="#categorias">Categorias</a><a href="#servicos">Serviços</a><a href="#servicos">Sobre nós</a><a href="#contactos">Contactos</a></nav>
 <div id="v"></div>
-<footer><img src="logo.webp" alt="Only Business"><p>Luanda, Viana, junto ao Alimenta Angola, Luanda Sul · 08:00–17:00<br>Chamadas 924 043 741 · WhatsApp 954 627 822</p><a href="#admin" style="color:#ffffff99">Admin</a></footer>
+<div class="bt"><div><b>Encontre. Compre. Receba.</b><div>A sua próxima compra está a poucos cliques.</div></div><a class="cta" href="#produtos">Começar a comprar →</a></div>
+<footer id="contactos"><div class="in"><div><img src="logo.webp" alt="Only Business"><p>Mais do que uma loja. Uma plataforma de oportunidades.</p></div><div><h4>Categorias</h4>Tecnologia<br>Moda<br>Casa<br>Beleza<br>Acessórios<br>Eletrónica</div><div><h4>Contactos</h4>💬 WhatsApp <a href="https://wa.me/244954627822">954 627 822</a><br>📞 Chamadas 924 043 741<br>📍 Luanda, Viana, junto ao Alimenta Angola, Luanda Sul<br>🕗 08:00–17:00<br><a href="#admin">Admin</a></div></div><p style="text-align:center;opacity:.7">© 2026 Only Business. Todos os direitos reservados.</p></footer>
 <div id="dr"><aside id="da"></aside></div>
 <script>
 // ===== COLE AQUI os dados do seu projeto Supabase (Project Settings > API) =====
@@ -78,12 +94,19 @@ function pintar(){const el=$("mp");if(!el||!window.L)return;
 const sub=()=>prods.reduce((s,p)=>s+(cart[p.id]||0)*p.preco,0), nIt=()=>Object.values(cart).reduce((a,b)=>a+b,0);
 const save=()=>{localStorage.setItem("ob_cart",JSON.stringify(cart));$("bc").textContent="Carrinho ("+nIt()+")"};
 
+let q="",cat="",onlyFav=false,fav=JSON.parse(localStorage.getItem("ob_fav")||"[]");
+const CATS=[["Tecnologia","📱"],["Moda","👟"],["Casa","🛋️"],["Beleza","💄"],["Acessórios","🎧"],["Eletrónica","💻"],["Outros","🛍️"]];
+function cards(){const l=prods.filter(p=>(!q||(p.nome+" "+(p.descricao||"")).toLowerCase().includes(q))&&(!cat||p.categoria==cat)&&(!onlyFav||fav.includes(p.id)));
+ $("g").innerHTML=l.length?l.map(p=>`<div class="card"><button class="hr" data-fav="${p.id}" aria-label="Favorito">${fav.includes(p.id)?"♥":"♡"}</button><img src="${esc(img(p.imagem))}" alt="${esc(p.nome)}" loading="lazy"><h3>${esc(p.nome)}</h3><div class="mu">${esc(p.descricao)}</div><div class="pr" style="margin:6px 0">${kz(p.preco)}</div><button class="p" data-add="${p.id}" style="width:100%">🛒 Adicionar ao carrinho</button></div>`).join(""):'<p class="mu">Nenhum produto encontrado.</p>'}
 async function loja(){
- $("v").innerHTML=`<section class="hero"><div><h1>Tecnologia e negócio, entregues à sua porta.</h1><p>Entrega em Luanda com frete calculado pela sua localização.</p><a class="cta" href="#produtos">Ver produtos</a></div><img src="modelo.webp" alt="Cliente Only Business"></section><main id="produtos"><h2>Produtos</h2><div class="grid" id="g"></div></main>`;
+ $("v").innerHTML=`<section class="hero"><div><div style="letter-spacing:2px;font-size:13px">— ONLY BUSINESS</div><h1>Tudo o que precisa,<br><em>num só lugar.</em></h1><p>Produtos selecionados, preços competitivos e uma experiência de compra simples e segura.</p><a class="cta" href="#produtos">🛒 Comprar agora</a><a class="ob" href="#produtos">Ver produtos →</a><div class="tr"><div>🚚<span>Entrega em Angola<small>Rápida e segura</small></span></div><div>💵<span>Pagamento na entrega<small>Pague quando receber</small></span></div><div>💬<span>Atendimento WhatsApp<small>Sempre ao seu lado</small></span></div></div></div><img class="hm" src="modelo-hero.webp" alt="Equipa Only Business"></section>
+ <section class="sec" id="categorias"><h2>Categorias</h2><p class="mu">Encontre o que precisa, de forma fácil e rápida.</p><div class="cats">${CATS.map(c=>`<button data-cat="${c[0]}"><span>${c[1]}</span>${c[0]}</button>`).join("")}</div></section>
+ <section class="sec" id="produtos"><div class="row"><h2>Produtos em destaque</h2><button class="s" data-all>Ver todos →</button></div><div class="grid" id="g" style="margin-top:12px"></div></section>
+ <section class="sec"><div class="bn"><small>OFERTAS ESPECIAIS</small><h3>Negocie o seu frete</h3><p>Proponha o valor da entrega ao fazer o pedido e fale connosco no WhatsApp.</p><a class="cta" href="#produtos">Ver produtos →</a></div></section>
+ <section class="sec"><h2>Por que comprar connosco?</h2><div class="wy"><div><span>🛡️</span><br><b>Compra 100% online</b></div><div><span>✅</span><br><b>Produtos selecionados</b></div><div><span>💵</span><br><b>Pagamento na entrega</b></div><div><span>🚚</span><br><b>Entrega em Angola</b></div><div><span>💬</span><br><b>Atendimento WhatsApp</b></div><div><span>🎧</span><br><b>Suporte ao cliente</b></div></div></section>
+ <section class="sv" id="servicos"><div class="in"><div><small>SERVIÇOS</small><h2>Mais do que uma loja.<br><em>Uma plataforma de oportunidades.</em></h2><p>Encontre produtos, serviços e soluções num único lugar.</p></div><div class="g4"><div><span>🚚</span>Serviços de entrega</div><div><span>🛠️</span>Serviços gerais</div><div><span>🧑‍💻</span>Suporte técnico</div><div><span>📊</span>Consultoria</div></div></div></section>`;
  const [p,c]=await Promise.all([sb.from("produtos").select("*").eq("ativo",true).order("criado_em",{ascending:false}),sb.from("definicoes").select("*").single()]);
- if(c.data)cfg=c.data; prods=p.data||[];
- $("g").innerHTML=prods.length?prods.map(p=>`<div class="card"><img src="${esc(img(p.imagem))}" alt="${esc(p.nome)}" loading="lazy"><h3>${esc(p.nome)}</h3><div class="mu">${esc(p.descricao)}</div><div class="row"><span class="pr">${kz(p.preco)}</span><button class="p" data-add="${p.id}">Comprar</button></div></div>`).join(""):'<p class="mu">Em breve novos produtos.</p>';
- save()}
+ if(c.data)cfg=c.data; prods=p.data||[];cards();save()}
 function carrinho(){if(map){try{map.remove()}catch(e){}map=null;mk=null}carrinho0();pintar()}
 function carrinho0(){
  guardar();const its=prods.filter(p=>cart[p.id]);
@@ -114,18 +137,32 @@ async function enviar(){
  const wurl="https://wa.me/"+WA+"?text="+encodeURIComponent(tx);$("wl").href=wurl;setTimeout(()=>{location.href=wurl},700)}
 
 // ===== ADMIN (#admin) =====
+let AO=[],AP=[],AD={},atab="pedidos",per="tudo";
+const ORD=["Novo","Confirmado","Em entrega","Entregue","Cancelado"],tot=x=>x.subtotal+(x.frete_final??x.frete_calculado),dt=x=>new Date(x.criado_em).toLocaleDateString("pt-PT");
+function ocard(x){const pr=x.frete_proposto&&x.frete_final==null;return `<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span> <span class="mu">${dt(x)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${pr?" · proposta "+kz(x.frete_proposto):""}</div><div class="pr">Total ${kz(tot(x))}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${pr?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}<button class="s" data-cp="${x.id}">Definir frete</button><a class="s" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${esc(wal(x))}">💬 WhatsApp do cliente</a></div></div>`}
 async function admin(){
  const {data:{session}}=await sb.auth.getSession();
  if(!session){$("v").innerHTML=`<main><h2>Admin</h2><div class="card"><label>Email</label><input id="ae" type="email"><label>Palavra-passe</label><input id="ap" type="password"><button class="p" data-login>Entrar</button><p class="mu" id="am"></p></div></main>`;return}
  const [o,p,c]=await Promise.all([sb.from("pedidos").select("*").order("criado_em",{ascending:false}),sb.from("produtos").select("*").order("criado_em",{ascending:false}),sb.from("definicoes").select("*").single()]);
  if(o.error){$("v").innerHTML='<main><p>Esta conta ainda não é administradora. Adicione o seu user_id à tabela admins.</p><button class="s" data-out>Sair</button></main>';return}
- const d=c.data||cfg;
- $("v").innerHTML=`<main><div class="row"><h2>Painel admin</h2><button class="s" data-out>Sair</button></div>
- <div class="card"><h3>Tarifas</h3><label>Preço por km (Kz)</label><input id="k" value="${d.preco_km}"><label>Frete mínimo (Kz)</label><input id="mn" value="${d.frete_minimo}"><button class="p" data-cfg>Guardar</button></div>
- <div class="card" style="margin-top:12px"><h3>Localização da loja</h3><p class="mu">Toque no mapa ou arraste o marcador para o ponto exato da loja (Viana, junto ao Alimenta Angola, Luanda Sul).</p><div id="ml" style="height:240px;border-radius:10px;z-index:0"></div><button class="p" data-loja style="margin-top:8px">Guardar localização</button></div>
- <h3>Novo produto</h3><div class="card"><label>Nome</label><input id="pn"><label>Descrição</label><textarea id="pd"></textarea><label>Preço (Kz)</label><input id="pp" inputmode="numeric"><label>Foto</label><input id="pf" type="file" accept="image/*"><button class="p" data-np>Adicionar</button></div>
- <h3>Produtos</h3>${p.data.map(x=>`<div class="card" style="margin-bottom:10px"><div class="row" style="justify-content:flex-start"><img src="${esc(img(x.imagem))}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px"><span>${esc(x.nome)}<br><b>${kz(x.preco)}</b> ${x.ativo?"":"(oculto)"}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><label class="s" style="color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer;margin:0">Mudar foto<input type="file" accept="image/*" data-foto="${x.id}" hidden></label><button class="s" data-pr="${x.id}">Mudar preço</button><button class="s" data-tg="${x.id}|${x.ativo}">${x.ativo?"Ocultar":"Mostrar"}</button><button class="s" data-del="${x.id}">Apagar</button></div></div>`).join("")}
- <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto&&x.frete_final==null?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto&&x.frete_final==null?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}<button class="s" data-cp="${x.id}">Definir frete</button><a class="s" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${esc(wal(x))}">💬 WhatsApp do cliente</a></div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`;lojaMapa(d)}
+ AO=o.data;AP=p.data;AD=c.data||cfg;adm()}
+function adm(){
+ const T=[["pedidos","Pedidos"],["analise","Análise"],["produtos","Produtos"],["loja","Definições"]];
+ let h=`<main><div class="row"><h2>Painel admin</h2><button class="s" data-out>Sair</button></div><div class="cats" style="grid-template-columns:repeat(4,1fr)">${T.map(t=>`<button data-at="${t[0]}" style="${atab==t[0]?"background:var(--teal);color:#fff":""}">${t[1]}</button>`).join("")}</div>`;
+ const S=a=>a.reduce((n,x)=>n+tot(x),0);
+ if(atab=="pedidos")h+=ORD.map(st=>{const l=AO.filter(x=>x.estado==st);return `<details ${l.length&&st!="Entregue"&&st!="Cancelado"?"open":""} style="margin-top:12px"><summary style="font-size:17px;padding:8px 0"><b>${st}</b> · ${l.length} pedido(s) · ${kz(S(l))}</summary>${l.map(ocard).join("")||'<p class="mu">Nenhum pedido.</p>'}</details>`}).join("");
+ if(atab=="analise"){const n=new Date(),lim={hoje:new Date().setHours(0,0,0,0),"7d":Date.now()-6048e5,mes:new Date(n.getFullYear(),n.getMonth(),1).getTime(),tudo:0}[per];
+  const L=AO.filter(x=>new Date(x.criado_em).getTime()>=lim),ent=L.filter(x=>x.estado=="Entregue"),can=L.filter(x=>x.estado=="Cancelado"),and=L.filter(x=>["Novo","Confirmado","Em entrega"].includes(x.estado));
+  const tx=ent.length+can.length?Math.round(can.length*100/(ent.length+can.length)):0,lst=(a)=>a.map(x=>`<div class="row"><span>${dt(x)} · ${esc(x.nome)}</span><b>${kz(tot(x))}</b></div>`).join("")||'<p class="mu">Nenhuma.</p>';
+  h+=`<div style="display:flex;gap:6px;margin:12px 0;flex-wrap:wrap">${[["hoje","Hoje"],["7d","7 dias"],["mes","Este mês"],["tudo","Tudo"]].map(t=>`<button class="s" data-per="${t[0]}" style="${per==t[0]?"background:var(--teal);color:#fff":""}">${t[1]}</button>`).join("")}</div>
+  <div class="card" style="border-left:5px solid #1a9a55"><div class="mu">✅ Compras concluídas</div><div class="pr" style="font-size:26px">${kz(S(ent))}</div><div>${ent.length} pedido(s) · produtos ${kz(ent.reduce((a,x)=>a+x.subtotal,0))} · fretes ${kz(ent.reduce((a,x)=>a+(x.frete_final??x.frete_calculado),0))}</div></div>
+  <div class="card" style="border-left:5px solid #c0392b;margin-top:10px"><div class="mu">❌ Compras canceladas</div><div class="pr" style="font-size:26px;color:#c0392b">${kz(S(can))}</div><div>${can.length} pedido(s) · taxa de cancelamento ${tx}%</div></div>
+  <div class="card" style="border-left:5px solid var(--or);margin-top:10px"><div class="mu">⏳ Em andamento</div><div class="pr" style="font-size:22px">${kz(S(and))}</div><div>${and.length} pedido(s) por concluir</div></div>
+  <div class="card tot" style="margin-top:10px"><div class="mu">Balanço (concluídas − canceladas não entram)</div><div class="pr" style="font-size:28px">${kz(S(ent))}</div></div>
+  <details style="margin-top:12px"><summary><b>Concluídas</b> (${ent.length})</summary>${lst(ent)}</details><details style="margin-top:8px"><summary><b>Canceladas</b> (${can.length})</summary>${lst(can)}</details>`}
+ if(atab=="produtos")h+=`<h3>Novo produto</h3><div class="card"><label>Nome</label><input id="pn"><label>Descrição</label><textarea id="pd"></textarea><label>Categoria</label><select id="pc"><option value="">—</option>${CATS.map(c=>`<option>${c[0]}</option>`).join("")}</select><label>Preço (Kz)</label><input id="pp" inputmode="numeric"><label>Foto</label><input id="pf" type="file" accept="image/*"><button class="p" data-np>Adicionar</button></div><h3>Produtos</h3>${AP.map(x=>`<div class="card" style="margin-bottom:10px"><div class="row" style="justify-content:flex-start"><img src="${esc(img(x.imagem))}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px"><span>${esc(x.nome)}<br><b>${kz(x.preco)}</b> ${x.ativo?"":"(oculto)"}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><label class="s" style="color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer;margin:0">Mudar foto<input type="file" accept="image/*" data-foto="${x.id}" hidden></label><button class="s" data-pr="${x.id}">Mudar preço</button><button class="s" data-tg="${x.id}|${x.ativo}">${x.ativo?"Ocultar":"Mostrar"}</button><button class="s" data-del="${x.id}">Apagar</button></div></div>`).join("")}`;
+ if(atab=="loja")h+=`<div class="card" style="margin-top:12px"><h3>Tarifas de frete</h3><label>Preço por km (Kz)</label><input id="k" value="${AD.preco_km}"><label>Frete mínimo (Kz)</label><input id="mn" value="${AD.frete_minimo}"><button class="p" data-cfg>Guardar</button></div><div class="card" style="margin-top:12px"><h3>Localização da loja</h3><p class="mu">Toque no mapa ou arraste o marcador para o ponto exato da loja.</p><div id="ml" style="height:240px;border-radius:10px;z-index:0"></div><button class="p" data-loja style="margin-top:8px">Guardar localização</button></div>`;
+ $("v").innerHTML=h+"</main>";if(atab=="loja")lojaMapa(AD)}
 let lm=null,lp=null;
 function lojaMapa(d){const el=$("ml");if(!el||!window.L)return;if(lm){try{lm.remove()}catch(e){}}
  lp={lat:d.loja_lat,lng:d.loja_lng};lm=L.map(el).setView([lp.lat,lp.lng],14);
@@ -138,6 +175,12 @@ function lojaMapa(d){const el=$("ml");if(!el||!window.L)return;if(lm){try{lm.rem
 document.addEventListener("click",async e=>{const t=e.target.closest("button,a"),d=t&&t.dataset;if(!d)return;
  if(t.id=="bc"){$("dr").classList.add("on");carrinho()}
  if("x" in d)$("dr").classList.remove("on");
+ if(d.cat){cat=d.cat;cards();$("produtos").scrollIntoView()}
+ if("all" in d){cat="";q="";onlyFav=false;$("q").value="";cards()}
+ if(d.fav){fav=fav.includes(d.fav)?fav.filter(x=>x!=d.fav):fav.concat(d.fav);localStorage.setItem("ob_fav",JSON.stringify(fav));cards()}
+ if("favs" in d){onlyFav=!onlyFav;if($("g")){cards();$("produtos").scrollIntoView()}}
+ if(d.at){atab=d.at;adm()}
+ if(d.per){per=d.per;adm()}
  if(d.add){cart[d.add]=(cart[d.add]||0)+1;save();$("dr").classList.add("on");carrinho()}
  if(d.pl){cart[d.pl]=(cart[d.pl]||0)+1;save();carrinho()}
  if(d.rm){if(--cart[d.rm]<=0)delete cart[d.rm];save();carrinho()}
@@ -150,7 +193,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,a")
  if("loja" in d&&lp){const r=await sb.from("definicoes").update({loja_lat:lp.lat,loja_lng:lp.lng}).eq("id",1);alert(r.error?"Não foi possível guardar.":"Localização da loja guardada.")}
  if("cfg" in d){await sb.from("definicoes").update({preco_km:+$("k").value,frete_minimo:+$("mn").value}).eq("id",1);admin()}
  if("np" in d){let path=null,f=$("pf").files[0];if(f){path=await subir(f);if(!path)return}
-  await sb.from("produtos").insert({nome:$("pn").value,descricao:$("pd").value,preco:+$("pp").value,imagem:path});admin()}
+  await sb.from("produtos").insert({nome:$("pn").value,descricao:$("pd").value,preco:+$("pp").value,imagem:path,...($("pc").value?{categoria:$("pc").value}:{})});admin()}
  if(d.pr){const v=prompt("Novo preço em Kz:");if(v&&+v>0){await sb.from("produtos").update({preco:+v}).eq("id",d.pr);admin()}}
  if(d.del&&confirm("Apagar este produto?")){await sb.from("produtos").delete().eq("id",d.del);admin()}
  if(d.cp){const v=prompt("Valor final do frete em Kz:");if(v&&+v>=0){await sb.from("pedidos").update({frete_final:+v,estado:"Confirmado"}).eq("id",d.cp);admin()}}
@@ -163,9 +206,9 @@ async function subir(f){let blob=f,ext="jpg",ct=f.type||"image/jpeg";
  const p=Date.now()+"."+ext,{error}=await sb.storage.from("produtos").upload(p,blob,{contentType:ct});
  if(error){alert("Erro ao enviar a foto: "+(error.message||error));return null}return p}
 addEventListener("change",async e=>{const i=e.target.dataset&&e.target.dataset.foto;if(!i||!e.target.files[0])return;const p=await subir(e.target.files[0]);if(p){await sb.from("produtos").update({imagem:p}).eq("id",i);admin()}});
-addEventListener("input",e=>{if(e.target.id=="of")atualizar()});
+addEventListener("input",e=>{if(e.target.id=="q"){q=e.target.value.toLowerCase();if($("g"))cards()}if(e.target.id=="of")atualizar()});
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
-const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash!="#produtos")rota()});rota();
+const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash=="#admin"||location.hash=="")rota()});rota();
 </script>
 </body>
 </html>
