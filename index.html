@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Only Business</title>
 <link rel="icon" href="logo.webp">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--teal:#03474c;--teal2:#04656b;--or:#fb7400;--bg:#f5f8f8;--card:#fff;--tx:#0d2b2d;--mu:#587173;--bd:#d8e3e3}
@@ -48,7 +50,24 @@ let prods=[],cfg={preco_km:300,frete_minimo:1000,loja_lat:-8.9036,loja_lng:13.37
 let frm={};const guardar=()=>{["n","t","m","b","r","of"].forEach(i=>{const e=$("da").querySelector("#"+i);if(e)frm[i]=e.value})};
 const img=u=>!u?"logo.webp":u.startsWith("http")?u:u.startsWith("img/")?u.slice(4):SUPABASE_URL+"/storage/v1/object/public/produtos/"+u;
 const dist=(a,b,c,d)=>{const r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2),h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*6371*Math.asin(Math.sqrt(h))*1.3};
-const frete=()=>gps?Math.max(cfg.frete_minimo,Math.round(dist(cfg.loja_lat,cfg.loja_lng,gps.lat,gps.lng)*cfg.preco_km/50)*50):null;
+let dkm=null,rid=0,map=null,mk=null;
+const kmv=()=>gps?(dkm??dist(cfg.loja_lat,cfg.loja_lng,gps.lat,gps.lng)):null;
+const frete=()=>gps?Math.max(cfg.frete_minimo,Math.round(kmv()*cfg.preco_km/50)*50):null;
+function atualizar(){const f=frete(),k=kmv(),o=+(($("of")||{}).value)||0;
+ if($("fr"))$("fr").textContent=f?kz(f):"—";
+ if($("km"))$("km").textContent=k?"("+k.toFixed(1).replace(".",",")+" km)":"";
+ if($("tt"))$("tt").textContent=kz(sub()+(o||f||0))}
+function definir(la,ln){gps={lat:la,lng:ln};dkm=null;
+ if(map){if(!mk){mk=L.marker([la,ln],{draggable:true}).addTo(map);mk.on("dragend",()=>{const p=mk.getLatLng();definir(p.lat,p.lng)})}else mk.setLatLng([la,ln])}
+ atualizar();const id=++rid,ac=new AbortController();setTimeout(()=>ac.abort(),6000);
+ fetch(`https://router.project-osrm.org/route/v1/driving/${cfg.loja_lng},${cfg.loja_lat};${ln},${la}?overview=false`,{signal:ac.signal}).then(r=>r.json()).then(j=>{if(id==rid&&j.routes&&j.routes[0]){dkm=j.routes[0].distance/1000;atualizar()}}).catch(()=>{})}
+function pintar(){const el=$("mp");if(!el||!window.L)return;
+ map=L.map(el).setView([cfg.loja_lat,cfg.loja_lng],12);
+ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+ L.circleMarker([cfg.loja_lat,cfg.loja_lng],{radius:9,color:"#fb7400",fillColor:"#fb7400",fillOpacity:1}).addTo(map).bindTooltip("Only Business (loja)");
+ mk=null;map.on("click",e=>definir(e.latlng.lat,e.latlng.lng));
+ if(gps){definir(gps.lat,gps.lng);map.fitBounds([[cfg.loja_lat,cfg.loja_lng],[gps.lat,gps.lng]],{padding:[30,30]})}
+ setTimeout(()=>map&&map.invalidateSize(),250)}
 const sub=()=>prods.reduce((s,p)=>s+(cart[p.id]||0)*p.preco,0), nIt=()=>Object.values(cart).reduce((a,b)=>a+b,0);
 const save=()=>{localStorage.setItem("ob_cart",JSON.stringify(cart));$("bc").textContent="Carrinho ("+nIt()+")"};
 
@@ -58,21 +77,22 @@ async function loja(){
  if(c.data)cfg=c.data; prods=p.data||[];
  $("g").innerHTML=prods.length?prods.map(p=>`<div class="card"><img src="${esc(img(p.imagem))}" alt="${esc(p.nome)}" loading="lazy"><h3>${esc(p.nome)}</h3><div class="mu">${esc(p.descricao)}</div><div class="row"><span class="pr">${kz(p.preco)}</span><button class="p" data-add="${p.id}">Comprar</button></div></div>`).join(""):'<p class="mu">Em breve novos produtos.</p>';
  save()}
-function carrinho(){
+function carrinho(){if(map){try{map.remove()}catch(e){}map=null;mk=null}carrinho0();pintar()}
+function carrinho0(){
  guardar();const its=prods.filter(p=>cart[p.id]);
  if(!its.length){$("da").innerHTML='<button class="s" data-x>Fechar</button><h2>Carrinho</h2><p class="mu">O carrinho está vazio.</p><button class="p" data-x>Voltar à loja</button>';return}
  const f=frete(),o=+frm.of||0;
  $("da").innerHTML=`<button class="s" data-x>Fechar</button><h2>Carrinho</h2>`+its.map(p=>`<div class="row"><span>${cart[p.id]}× ${esc(p.nome)}</span><span>${kz(cart[p.id]*p.preco)} <button class="s" data-rm="${p.id}">−</button> <button class="s" data-pl="${p.id}">+</button></span></div>`).join("")+
  `<h2>Entrega</h2><div class="card"><label>Nome</label><input id="n" value="${esc(frm.n)}"><label>Telefone</label><input id="t" inputmode="tel" value="${esc(frm.t)}"><label>Município</label><input id="m" value="${esc(frm.m)}"><label>Bairro</label><input id="b" value="${esc(frm.b)}"><label>Rua e casa</label><input id="r" value="${esc(frm.r)}">
- <button class="s" data-gps>${gps?"Localização confirmada ✓":"Usar o meu GPS"}</button><p class="mu">${esc(msg)}</p>
- <div class="row"><span>Frete${gps?"":" (ative o GPS)"}</span><b>${f?kz(f):"—"}</b></div>
+ <button class="p" data-gps style="width:100%">📍 Usar a minha localização</button><p class="mu" id="gm">${esc(msg)||"Ou toque no mapa para marcar o local de entrega. Pode arrastar o marcador para ajustar."}</p><div id="mp" style="height:260px;border-radius:10px;margin:8px 0;z-index:0"></div>
+ <div class="row"><span>Frete <span class="mu" id="km"></span></span><b id="fr">${f?kz(f):"—"}</b></div>
  <label>Quer negociar o frete? Proponha um valor (Kz)</label><input id="of" inputmode="numeric" value="${esc(frm.of)}">
  <div class="row"><span class="mu">Pagamento</span><span>Na entrega</span></div>
  <div class="row tot"><span>Total</span><span id="tt">${kz(sub()+(o||f||0))}</span></div><button class="p" data-send style="width:100%;margin-top:8px">Enviar pedido</button></div>`}
 async function enviar(){
  const g=id=>$(id).value.trim(),its=prods.filter(p=>cart[p.id]);
  if(!g("n")||!g("t")||!g("m")||!g("r")){msg="Preencha nome, telefone e morada.";return carrinho()}
- if(!gps){msg="Confirme a localização com o GPS para calcular o frete.";return carrinho()}
+ if(!gps){msg="Marque o local de entrega no mapa para calcular o frete.";return carrinho()}
  const f=frete(),of=+g("of")||null,morada=[g("m"),g("b"),g("r")].filter(Boolean).join(", ");
  const itens=its.map(p=>({id:p.id,nome:p.nome,qtd:cart[p.id],preco:p.preco}));
  const {error}=await sb.from("pedidos").insert({nome:g("n"),telefone:g("t"),municipio:g("m"),bairro:g("b"),rua_casa:g("r"),lat:gps.lat,lng:gps.lng,itens,subtotal:sub(),frete_calculado:f,frete_proposto:of});
@@ -99,7 +119,9 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,a")
  if(d.add){cart[d.add]=(cart[d.add]||0)+1;save();$("dr").classList.add("on");carrinho()}
  if(d.pl){cart[d.pl]=(cart[d.pl]||0)+1;save();carrinho()}
  if(d.rm){if(--cart[d.rm]<=0)delete cart[d.rm];save();carrinho()}
- if("gps" in d){msg="A obter localização…";carrinho();navigator.geolocation.getCurrentPosition(p=>{gps={lat:p.coords.latitude,lng:p.coords.longitude};msg="";carrinho()},()=>{msg="Ative a localização e tente de novo.";carrinho()},{enableHighAccuracy:true,timeout:15000})}
+ if("gps" in d){const g=x=>{msg=x;if($("gm"))$("gm").textContent=x};g("A obter a sua localização…");
+  if(!navigator.geolocation)return g("Este aparelho não suporta GPS. Toque no mapa para marcar o local.");
+  navigator.geolocation.getCurrentPosition(p=>{const la=p.coords.latitude,ln=p.coords.longitude;definir(la,ln);if(map)map.fitBounds([[cfg.loja_lat,cfg.loja_lng],[la,ln]],{padding:[30,30]});g("Localização encontrada ✓ Pode arrastar o marcador para ajustar.")},()=>g("Não foi possível obter o GPS. Ative em Definições > Privacidade > Serviços de Localização > Safari, ou toque no mapa para marcar o local."),{enableHighAccuracy:true,timeout:15000,maximumAge:60000})}
  if("send" in d)enviar();
  if("login" in d){const r=await sb.auth.signInWithPassword({email:$("ae").value,password:$("ap").value});r.error?$("am").textContent="Email ou palavra-passe incorretos.":admin()}
  if("out" in d){await sb.auth.signOut();admin()}
@@ -117,7 +139,7 @@ async function subir(f){let blob=f,ext="jpg",ct=f.type||"image/jpeg";
  const p=Date.now()+"."+ext,{error}=await sb.storage.from("produtos").upload(p,blob,{contentType:ct});
  if(error){alert("Erro ao enviar a foto: "+(error.message||error));return null}return p}
 addEventListener("change",async e=>{const i=e.target.dataset&&e.target.dataset.foto;if(!i||!e.target.files[0])return;const p=await subir(e.target.files[0]);if(p){await sb.from("produtos").update({imagem:p}).eq("id",i);admin()}});
-addEventListener("input",e=>{if(e.target.id=="of"&&$("tt"))$("tt").textContent=kz(sub()+(+e.target.value||frete()||0))});
+addEventListener("input",e=>{if(e.target.id=="of")atualizar()});
 const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash!="#produtos")rota()});rota();
 </script>
 </body>
