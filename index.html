@@ -30,6 +30,7 @@ button.s{background:#fff;color:var(--teal);border:1px solid var(--teal);border-r
 footer{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;font-size:14px}footer img{height:50px;background:#fff;border-radius:8px;padding:4px}
 #dr{position:fixed;inset:0;background:#0007;display:none;justify-content:flex-end;z-index:9}#dr.on{display:flex}
 #dr aside{background:var(--bg);width:min(440px,100%);height:100%;overflow:auto;padding:16px}
+#wa{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));background:#25d366;color:#fff;border-radius:30px;padding:12px 18px;font-weight:700;text-decoration:none;z-index:4;box-shadow:0 3px 10px #0004}
 @media(max-width:640px){.hero{grid-template-columns:1fr}.hero img{max-height:300px}}
 :focus-visible{outline:3px solid var(--or);outline-offset:2px}
 </style>
@@ -38,6 +39,7 @@ footer{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;fon
 <header><img src="logo.webp" alt="Only Business"><button id="bc">Carrinho (0)</button></header>
 <div id="v"></div>
 <footer><img src="logo.webp" alt="Only Business"><p>Luanda, Viana, junto ao Alimenta Angola, Luanda Sul · 08:00–17:00<br>Chamadas 924 043 741 · WhatsApp 954 627 822</p><a href="#admin" style="color:#ffffff99">Admin</a></footer>
+<a id="wa" href="https://wa.me/244954627822?text=Ol%C3%A1%2C%20vim%20do%20site%20da%20Only%20Business." target="_blank" rel="noopener">💬 WhatsApp</a>
 <div id="dr"><aside id="da"></aside></div>
 <script>
 // ===== COLE AQUI os dados do seu projeto Supabase (Project Settings > API) =====
@@ -48,6 +50,7 @@ const $=id=>document.getElementById(id), kz=n=>Math.round(n).toLocaleString("pt-
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let prods=[],cfg={preco_km:300,frete_minimo:1000,loja_lat:-8.9036,loja_lng:13.3736},cart=JSON.parse(localStorage.getItem("ob_cart")||"{}"),gps=null,msg="";
 let frm={};const guardar=()=>{["n","t","m","b","r","of"].forEach(i=>{const e=$("da").querySelector("#"+i);if(e)frm[i]=e.value})};
+const wal=x=>{let n=String(x.telefone).replace(/\D/g,"");if(n.length==9)n="244"+n;return "https://wa.me/"+n+"?text="+encodeURIComponent("Olá "+x.nome+"! Sobre o seu pedido na Only Business ("+x.itens.map(i=>i.qtd+"x "+i.nome).join(", ")+"): frete "+kz(x.frete_final??x.frete_calculado)+". Podemos confirmar?")};
 const img=u=>!u?"logo.webp":u.startsWith("http")?u:u.startsWith("img/")?u.slice(4):SUPABASE_URL+"/storage/v1/object/public/produtos/"+u;
 const dist=(a,b,c,d)=>{const r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2),h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*6371*Math.asin(Math.sqrt(h))*1.3};
 let dkm=null,rid=0,map=null,mk=null;
@@ -83,7 +86,7 @@ function carrinho0(){
  if(!its.length){$("da").innerHTML='<button class="s" data-x>Fechar</button><h2>Carrinho</h2><p class="mu">O carrinho está vazio.</p><button class="p" data-x>Voltar à loja</button>';return}
  const f=frete(),o=+frm.of||0;
  $("da").innerHTML=`<button class="s" data-x>Fechar</button><h2>Carrinho</h2>`+its.map(p=>`<div class="row"><span>${cart[p.id]}× ${esc(p.nome)}</span><span>${kz(cart[p.id]*p.preco)} <button class="s" data-rm="${p.id}">−</button> <button class="s" data-pl="${p.id}">+</button></span></div>`).join("")+
- `<h2>Entrega</h2><div class="card"><label>Nome</label><input id="n" value="${esc(frm.n)}"><label>Telefone</label><input id="t" inputmode="tel" value="${esc(frm.t)}"><label>Município</label><input id="m" value="${esc(frm.m)}"><label>Bairro</label><input id="b" value="${esc(frm.b)}"><label>Rua e casa</label><input id="r" value="${esc(frm.r)}">
+ `<h2>Entrega</h2><div class="card"><label>Nome</label><input id="n" value="${esc(frm.n)}"><label>Telefone (9 dígitos)</label><input id="t" inputmode="tel" value="${esc(frm.t)}"><label>Município</label><input id="m" value="${esc(frm.m)}"><label>Bairro</label><input id="b" value="${esc(frm.b)}"><label>Rua e casa</label><input id="r" value="${esc(frm.r)}">
  <button class="p" data-gps style="width:100%">📍 Usar a minha localização</button><p class="mu" id="gm">${esc(msg)||"Ou toque no mapa para marcar o local de entrega. Pode arrastar o marcador para ajustar."}</p><div id="mp" style="height:260px;border-radius:10px;margin:8px 0;z-index:0"></div>
  <div class="row"><span>Frete <span class="mu" id="km"></span></span><b id="fr">${f?kz(f):"—"}</b></div>
  <label>Quer negociar o frete? Proponha um valor (Kz)</label><input id="of" inputmode="numeric" value="${esc(frm.of)}">
@@ -92,6 +95,7 @@ function carrinho0(){
 async function enviar(){
  const g=id=>$(id).value.trim(),its=prods.filter(p=>cart[p.id]);
  if(!g("n")||!g("t")||!g("m")||!g("r")){msg="Preencha nome, telefone e morada.";return carrinho()}
+ if(g("t").replace(/\D/g,"").length<9){msg="Escreva o telefone com 9 dígitos.";return carrinho()}
  if(!gps){msg="Marque o local de entrega no mapa para calcular o frete.";return carrinho()}
  const f=frete(),of=+g("of")||null,morada=[g("m"),g("b"),g("r")].filter(Boolean).join(", ");
  const itens=its.map(p=>({id:p.id,nome:p.nome,qtd:cart[p.id],preco:p.preco}));
@@ -114,7 +118,7 @@ async function admin(){
  <div class="card" style="margin-top:12px"><h3>Localização da loja</h3><p class="mu">Toque no mapa ou arraste o marcador para o ponto exato da loja (Viana, junto ao Alimenta Angola, Luanda Sul).</p><div id="ml" style="height:240px;border-radius:10px;z-index:0"></div><button class="p" data-loja style="margin-top:8px">Guardar localização</button></div>
  <h3>Novo produto</h3><div class="card"><label>Nome</label><input id="pn"><label>Descrição</label><textarea id="pd"></textarea><label>Preço (Kz)</label><input id="pp" inputmode="numeric"><label>Foto</label><input id="pf" type="file" accept="image/*"><button class="p" data-np>Adicionar</button></div>
  <h3>Produtos</h3>${p.data.map(x=>`<div class="card" style="margin-bottom:10px"><div class="row" style="justify-content:flex-start"><img src="${esc(img(x.imagem))}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px"><span>${esc(x.nome)}<br><b>${kz(x.preco)}</b> ${x.ativo?"":"(oculto)"}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><label class="s" style="color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer;margin:0">Mudar foto<input type="file" accept="image/*" data-foto="${x.id}" hidden></label><button class="s" data-pr="${x.id}">Mudar preço</button><button class="s" data-tg="${x.id}|${x.ativo}">${x.ativo?"Ocultar":"Mostrar"}</button><button class="s" data-del="${x.id}">Apagar</button></div></div>`).join("")}
- <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}</div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`;lojaMapa(d)}
+ <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto&&x.frete_final==null?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto&&x.frete_final==null?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}<button class="s" data-cp="${x.id}">Definir frete</button><a class="s" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${esc(wal(x))}">💬 WhatsApp do cliente</a></div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`;lojaMapa(d)}
 let lm=null,lp=null;
 function lojaMapa(d){const el=$("ml");if(!el||!window.L)return;if(lm){try{lm.remove()}catch(e){}}
  lp={lat:d.loja_lat,lng:d.loja_lng};lm=L.map(el).setView([lp.lat,lp.lng],14);
@@ -142,6 +146,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,a")
   await sb.from("produtos").insert({nome:$("pn").value,descricao:$("pd").value,preco:+$("pp").value,imagem:path});admin()}
  if(d.pr){const v=prompt("Novo preço em Kz:");if(v&&+v>0){await sb.from("produtos").update({preco:+v}).eq("id",d.pr);admin()}}
  if(d.del&&confirm("Apagar este produto?")){await sb.from("produtos").delete().eq("id",d.del);admin()}
+ if(d.cp){const v=prompt("Valor final do frete em Kz:");if(v&&+v>=0){await sb.from("pedidos").update({frete_final:+v,estado:"Confirmado"}).eq("id",d.cp);admin()}}
  if(d.tg){const [i,a]=d.tg.split("|");await sb.from("produtos").update({ativo:a!="true"}).eq("id",i);admin()}
  if(d.st){const [i,s]=d.st.split("|");await sb.from("pedidos").update({estado:s}).eq("id",i);admin()}
  if(d.ac){const [i,v]=d.ac.split("|");await sb.from("pedidos").update({frete_final:+v,estado:"Confirmado"}).eq("id",i);admin()}});
