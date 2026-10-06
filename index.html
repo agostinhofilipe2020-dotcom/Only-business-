@@ -91,20 +91,23 @@ function carrinho0(){
  <div class="row"><span>Frete <span class="mu" id="km"></span></span><b id="fr">${f?kz(f):"—"}</b></div>
  <label>Quer negociar o frete? Proponha um valor (Kz)</label><input id="of" inputmode="numeric" value="${esc(frm.of)}">
  <div class="row"><span class="mu">Pagamento</span><span>Na entrega</span></div>
- <div class="row tot"><span>Total</span><span id="tt">${kz(sub()+(o||f||0))}</span></div><button class="p" data-send style="width:100%;margin-top:8px">Enviar pedido</button></div>`}
+ <div class="row tot"><span>Total</span><span id="tt">${kz(sub()+(o||f||0))}</span></div><p id="em" style="color:#c0392b;font-weight:600;margin:6px 0"></p><button class="p" data-send style="width:100%;margin-top:8px">Enviar pedido</button></div>`}
+function erro(x){const e=$("em");if(e){e.textContent=x;e.scrollIntoView({block:"center",behavior:"smooth"})}const b=document.querySelector("[data-send]");if(b){b.disabled=false;b.textContent="Enviar pedido"}}
 async function enviar(){
+ const bt=document.querySelector("[data-send]");if(bt){bt.disabled=true;bt.textContent="A enviar…"}
+ if($("em"))$("em").textContent="";
  const g=id=>$(id).value.trim(),its=prods.filter(p=>cart[p.id]);
- if(!g("n")||!g("t")||!g("m")||!g("r")){msg="Preencha nome, telefone e morada.";return carrinho()}
- if(g("t").replace(/\D/g,"").length<9){msg="Escreva o telefone com 9 dígitos.";return carrinho()}
- if(!gps){msg="Marque o local de entrega no mapa para calcular o frete.";return carrinho()}
+ if(!g("n")||!g("t")||!g("m")||!g("r"))return erro("Preencha nome, telefone, município e rua.")
+ if(g("t").replace(/\D/g,"").length<9)return erro("Escreva o telefone com 9 dígitos (ex.: 924043741).")
+ if(!gps)return erro("Toque em «Usar a minha localização» ou marque o local no mapa, para calcular o frete.")
  const f=frete(),of=+g("of")||null,morada=[g("m"),g("b"),g("r")].filter(Boolean).join(", ");
  const itens=its.map(p=>({id:p.id,nome:p.nome,qtd:cart[p.id],preco:p.preco}));
  const {error}=await sb.from("pedidos").insert({nome:g("n"),telefone:g("t"),municipio:g("m"),bairro:g("b"),rua_casa:g("r"),lat:gps.lat,lng:gps.lng,itens,subtotal:sub(),frete_calculado:f,frete_proposto:of});
- if(error){msg="Não foi possível enviar. Tente de novo.";return carrinho()}
+ if(error)return erro("Não foi possível enviar o pedido: "+(error.message||"tente de novo"))
  const tx=`*Novo pedido – Only Business*\n${itens.map(i=>i.qtd+"x "+i.nome).join("; ")}\nProdutos: ${kz(sub())}\nFrete: ${kz(f)}${of?"\nProposta de frete: "+kz(of):""}\nPagamento: na entrega\nCliente: ${g("n")} (${g("t")})\nMorada: ${morada}\nGPS: https://maps.google.com/?q=${gps.lat},${gps.lng}`;
  cart={};frm={};save();if(map){try{map.remove()}catch(e){}map=null;mk=null}
  $("da").innerHTML='<button class="s" data-x>Fechar</button><h2>Pedido recebido ✓</h2><p>O seu pedido foi registado. Toque no botão para o confirmar connosco no WhatsApp.</p><a id="wl" class="cta" style="display:block;text-align:center;background:#25d366">Enviar pelo WhatsApp</a>';
- $("wl").href="https://wa.me/"+WA+"?text="+encodeURIComponent(tx)}
+ const wurl="https://wa.me/"+WA+"?text="+encodeURIComponent(tx);$("wl").href=wurl;setTimeout(()=>{location.href=wurl},700)}
 
 // ===== ADMIN (#admin) =====
 async function admin(){
