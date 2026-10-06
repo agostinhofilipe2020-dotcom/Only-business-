@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Only Business</title>
+<link rel="icon" href="logo.webp">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--teal:#03474c;--teal2:#04656b;--or:#fb7400;--bg:#f5f8f8;--card:#fff;--tx:#0d2b2d;--mu:#587173;--bd:#d8e3e3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif}
+header{background:#fff;border-bottom:3px solid var(--or);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header img{height:46px}header button{background:var(--teal);color:#fff;border:0;border-radius:22px;padding:9px 16px;font-weight:600}
+.hero{background:var(--teal);color:#fff;display:grid;grid-template-columns:1.2fr 1fr;align-items:end;gap:0;overflow:hidden;min-height:300px}
+.hero div{padding:32px 20px}.hero h1{font-size:clamp(26px,6vw,46px);line-height:1.1;margin:0 0 12px}
+.hero img{width:100%;height:100%;max-height:420px;object-fit:cover;object-position:top}
+a.cta,button.p{background:var(--or);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700;font-size:15px;text-decoration:none;display:inline-block;cursor:pointer}
+main{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.card img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+.mu{color:var(--mu);font-size:14px}.pr{color:var(--teal2);font-weight:800;font-size:18px}
+input,select,textarea{width:100%;padding:11px;margin:4px 0 10px;border:1px solid var(--bd);border-radius:8px;font:inherit}
+label{font-size:13px;color:var(--mu)}.row{display:flex;justify-content:space-between;gap:8px;margin:6px 0;align-items:center}
+.tot{font-weight:800;font-size:18px;border-top:1px solid var(--bd);padding-top:8px}
+button.s{background:#fff;color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer}
+.tag{background:var(--teal);color:#fff;border-radius:10px;padding:2px 9px;font-size:12px}
+footer{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;font-size:14px}footer img{height:50px;background:#fff;border-radius:8px;padding:4px}
+#dr{position:fixed;inset:0;background:#0007;display:none;justify-content:flex-end;z-index:9}#dr.on{display:flex}
+#dr aside{background:var(--bg);width:min(440px,100%);height:100%;overflow:auto;padding:16px}
+@media(max-width:640px){.hero{grid-template-columns:1fr}.hero img{max-height:300px}}
+:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+</style>
+</head>
+<body>
+<header><img src="logo.webp" alt="Only Business"><button id="bc">Carrinho (0)</button></header>
+<div id="v"></div>
+<footer><img src="logo.webp" alt="Only Business"><p>Viana, Luanda Sul, Jacinto Tchipa · 08:00–17:00<br>Chamadas 924 043 741 · WhatsApp 954 627 822</p><a href="#admin" style="color:#ffffff99">Admin</a></footer>
+<div id="dr"><aside id="da"></aside></div>
+<script>
+// ===== COLE AQUI os dados do seu projeto Supabase (Project Settings > API) =====
+const SUPABASE_URL="https://munlhxqemmrbftehsqdr.supabase.co", SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11bmxoeHFlbW1yYmZ0ZWhzcWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNjUxMjksImV4cCI6MjEwNjg0MTEyOX0.0aq9jJYGbZQg6wOoHQMD-XuE118KX3PQaSffLM4FIAk";
+const WA="244954627822";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id), kz=n=>Math.round(n).toLocaleString("pt-PT")+" Kz";
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let prods=[],cfg={preco_km:300,frete_minimo:1000,loja_lat:-8.9036,loja_lng:13.3736},cart=JSON.parse(localStorage.getItem("ob_cart")||"{}"),gps=null,msg="";
+const img=u=>!u?"logo.webp":u.startsWith("http")?u:u.startsWith("img/")?u.slice(4):SUPABASE_URL+"/storage/v1/object/public/produtos/"+u;
+const dist=(a,b,c,d)=>{const r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2),h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*6371*Math.asin(Math.sqrt(h))*1.3};
+const frete=()=>gps?Math.max(cfg.frete_minimo,Math.round(dist(cfg.loja_lat,cfg.loja_lng,gps.lat,gps.lng)*cfg.preco_km/50)*50):null;
+const sub=()=>prods.reduce((s,p)=>s+(cart[p.id]||0)*p.preco,0), nIt=()=>Object.values(cart).reduce((a,b)=>a+b,0);
+const save=()=>{localStorage.setItem("ob_cart",JSON.stringify(cart));$("bc").textContent="Carrinho ("+nIt()+")"};
+
+async function loja(){
+ $("v").innerHTML=`<section class="hero"><div><h1>Tecnologia e negócio, entregues à sua porta.</h1><p>Entrega em Luanda com frete calculado pela sua localização.</p><a class="cta" href="#produtos">Ver produtos</a></div><img src="modelo.webp" alt="Cliente Only Business"></section><main id="produtos"><h2>Produtos</h2><div class="grid" id="g"></div></main>`;
+ const [p,c]=await Promise.all([sb.from("produtos").select("*").eq("ativo",true).order("criado_em",{ascending:false}),sb.from("definicoes").select("*").single()]);
+ if(c.data)cfg=c.data; prods=p.data||[];
+ $("g").innerHTML=prods.length?prods.map(p=>`<div class="card"><img src="${esc(img(p.imagem))}" alt="${esc(p.nome)}" loading="lazy"><h3>${esc(p.nome)}</h3><div class="mu">${esc(p.descricao)}</div><div class="row"><span class="pr">${kz(p.preco)}</span><button class="p" data-add="${p.id}">Comprar</button></div></div>`).join(""):'<p class="mu">Em breve novos produtos.</p>';
+ save()}
+function carrinho(){
+ const its=prods.filter(p=>cart[p.id]);
+ if(!its.length){$("da").innerHTML='<button class="s" data-x>Fechar</button><h2>Carrinho</h2><p class="mu">O carrinho está vazio.</p>';return}
+ const f=frete(),o=+($("of")||{}).value||0;
+ $("da").innerHTML=`<button class="s" data-x>Fechar</button><h2>Carrinho</h2>`+its.map(p=>`<div class="row"><span>${cart[p.id]}× ${esc(p.nome)}</span><span>${kz(cart[p.id]*p.preco)} <button class="s" data-rm="${p.id}">−</button></span></div>`).join("")+
+ `<h2>Entrega</h2><div class="card"><label>Nome</label><input id="n"><label>Telefone</label><input id="t" inputmode="tel"><label>Município</label><input id="m"><label>Bairro</label><input id="b"><label>Rua e casa</label><input id="r">
+ <button class="s" data-gps>${gps?"Localização confirmada ✓":"Usar o meu GPS"}</button><p class="mu">${esc(msg)}</p>
+ <div class="row"><span>Frete${gps?"":" (ative o GPS)"}</span><b>${f?kz(f):"—"}</b></div>
+ <label>Quer negociar o frete? Proponha um valor (Kz)</label><input id="of" inputmode="numeric" value="${o||""}">
+ <div class="row"><span class="mu">Pagamento</span><span>Na entrega</span></div>
+ <div class="row tot"><span>Total</span><span>${kz(sub()+(o||f||0))}</span></div><button class="p" data-send style="width:100%;margin-top:8px">Enviar pedido</button></div>`}
+async function enviar(){
+ const g=id=>$(id).value.trim(),its=prods.filter(p=>cart[p.id]);
+ if(!g("n")||!g("t")||!g("m")||!g("r")){msg="Preencha nome, telefone e morada.";return carrinho()}
+ if(!gps){msg="Confirme a localização com o GPS para calcular o frete.";return carrinho()}
+ const f=frete(),of=+g("of")||null,morada=[g("m"),g("b"),g("r")].filter(Boolean).join(", ");
+ const itens=its.map(p=>({id:p.id,nome:p.nome,qtd:cart[p.id],preco:p.preco}));
+ const {error}=await sb.from("pedidos").insert({nome:g("n"),telefone:g("t"),municipio:g("m"),bairro:g("b"),rua_casa:g("r"),lat:gps.lat,lng:gps.lng,itens,subtotal:sub(),frete_calculado:f,frete_proposto:of});
+ if(error){msg="Não foi possível enviar. Tente de novo.";return carrinho()}
+ const tx=`*Novo pedido – Only Business*\n${itens.map(i=>i.qtd+"x "+i.nome).join("; ")}\nProdutos: ${kz(sub())}\nFrete: ${kz(f)}${of?"\nProposta de frete: "+kz(of):""}\nPagamento: na entrega\nCliente: ${g("n")} (${g("t")})\nMorada: ${morada}\nGPS: https://maps.google.com/?q=${gps.lat},${gps.lng}`;
+ cart={};save();$("dr").classList.remove("on");alert("Pedido enviado! Vamos confirmar no WhatsApp.");open("https://wa.me/"+WA+"?text="+encodeURIComponent(tx))}
+
+// ===== ADMIN (#admin) =====
+async function admin(){
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session){$("v").innerHTML=`<main><h2>Admin</h2><div class="card"><label>Email</label><input id="ae" type="email"><label>Palavra-passe</label><input id="ap" type="password"><button class="p" data-login>Entrar</button><p class="mu" id="am"></p></div></main>`;return}
+ const [o,p,c]=await Promise.all([sb.from("pedidos").select("*").order("criado_em",{ascending:false}),sb.from("produtos").select("*").order("criado_em",{ascending:false}),sb.from("definicoes").select("*").single()]);
+ if(o.error){$("v").innerHTML='<main><p>Esta conta ainda não é administradora. Adicione o seu user_id à tabela admins.</p><button class="s" data-out>Sair</button></main>';return}
+ const d=c.data||cfg;
+ $("v").innerHTML=`<main><div class="row"><h2>Painel admin</h2><button class="s" data-out>Sair</button></div>
+ <div class="card"><h3>Tarifas</h3><label>Preço por km (Kz)</label><input id="k" value="${d.preco_km}"><label>Frete mínimo (Kz)</label><input id="mn" value="${d.frete_minimo}"><button class="p" data-cfg>Guardar</button></div>
+ <h3>Novo produto</h3><div class="card"><label>Nome</label><input id="pn"><label>Descrição</label><textarea id="pd"></textarea><label>Preço (Kz)</label><input id="pp" inputmode="numeric"><label>Foto</label><input id="pf" type="file" accept="image/*"><button class="p" data-np>Adicionar</button></div>
+ <h3>Produtos</h3>${p.data.map(x=>`<div class="card row"><span>${esc(x.nome)} · ${kz(x.preco)} ${x.ativo?"":"(oculto)"}</span><span><button class="s" data-tg="${x.id}|${x.ativo}">${x.ativo?"Ocultar":"Mostrar"}</button></span></div>`).join("")}
+ <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}</div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`}
+
+document.addEventListener("click",async e=>{const t=e.target.closest("button,a"),d=t&&t.dataset;if(!d)return;
+ if(t.id=="bc"){$("dr").classList.add("on");carrinho()}
+ if("x" in d)$("dr").classList.remove("on");
+ if(d.add){cart[d.add]=(cart[d.add]||0)+1;save();$("dr").classList.add("on");carrinho()}
+ if(d.rm){if(--cart[d.rm]<=0)delete cart[d.rm];save();carrinho()}
+ if("gps" in d){msg="A obter localização…";carrinho();navigator.geolocation.getCurrentPosition(p=>{gps={lat:p.coords.latitude,lng:p.coords.longitude};msg="";carrinho()},()=>{msg="Ative a localização e tente de novo.";carrinho()},{enableHighAccuracy:true,timeout:15000})}
+ if("send" in d)enviar();
+ if("login" in d){const r=await sb.auth.signInWithPassword({email:$("ae").value,password:$("ap").value});r.error?$("am").textContent="Email ou palavra-passe incorretos.":admin()}
+ if("out" in d){await sb.auth.signOut();admin()}
+ if("cfg" in d){await sb.from("definicoes").update({preco_km:+$("k").value,frete_minimo:+$("mn").value}).eq("id",1);admin()}
+ if("np" in d){let path=null,f=$("pf").files[0];if(f){path=Date.now()+"-"+f.name.replace(/[^\w.]/g,"_");await sb.storage.from("produtos").upload(path,f)}
+  await sb.from("produtos").insert({nome:$("pn").value,descricao:$("pd").value,preco:+$("pp").value,imagem:path});admin()}
+ if(d.tg){const [i,a]=d.tg.split("|");await sb.from("produtos").update({ativo:a!="true"}).eq("id",i);admin()}
+ if(d.st){const [i,s]=d.st.split("|");await sb.from("pedidos").update({estado:s}).eq("id",i);admin()}
+ if(d.ac){const [i,v]=d.ac.split("|");await sb.from("pedidos").update({frete_final:+v,estado:"Confirmado"}).eq("id",i);admin()}});
+const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash!="#produtos")rota()});rota();
+</script>
+</body>
+</html>
