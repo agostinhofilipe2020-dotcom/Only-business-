@@ -98,7 +98,9 @@ async function enviar(){
  const {error}=await sb.from("pedidos").insert({nome:g("n"),telefone:g("t"),municipio:g("m"),bairro:g("b"),rua_casa:g("r"),lat:gps.lat,lng:gps.lng,itens,subtotal:sub(),frete_calculado:f,frete_proposto:of});
  if(error){msg="Não foi possível enviar. Tente de novo.";return carrinho()}
  const tx=`*Novo pedido – Only Business*\n${itens.map(i=>i.qtd+"x "+i.nome).join("; ")}\nProdutos: ${kz(sub())}\nFrete: ${kz(f)}${of?"\nProposta de frete: "+kz(of):""}\nPagamento: na entrega\nCliente: ${g("n")} (${g("t")})\nMorada: ${morada}\nGPS: https://maps.google.com/?q=${gps.lat},${gps.lng}`;
- cart={};frm={};save();$("dr").classList.remove("on");alert("Pedido enviado! Vamos confirmar no WhatsApp.");open("https://wa.me/"+WA+"?text="+encodeURIComponent(tx))}
+ cart={};frm={};save();if(map){try{map.remove()}catch(e){}map=null;mk=null}
+ $("da").innerHTML='<button class="s" data-x>Fechar</button><h2>Pedido recebido ✓</h2><p>O seu pedido foi registado. Toque no botão para o confirmar connosco no WhatsApp.</p><a id="wl" class="cta" style="display:block;text-align:center;background:#25d366">Enviar pelo WhatsApp</a>';
+ $("wl").href="https://wa.me/"+WA+"?text="+encodeURIComponent(tx)}
 
 // ===== ADMIN (#admin) =====
 async function admin(){
