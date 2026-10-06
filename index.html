@@ -37,7 +37,7 @@ footer{background:var(--teal);color:#fff;padding:20px 16px;text-align:center;fon
 <body>
 <header><img src="logo.webp" alt="Only Business"><button id="bc">Carrinho (0)</button></header>
 <div id="v"></div>
-<footer><img src="logo.webp" alt="Only Business"><p>Viana, Luanda Sul, Jacinto Tchipa · 08:00–17:00<br>Chamadas 924 043 741 · WhatsApp 954 627 822</p><a href="#admin" style="color:#ffffff99">Admin</a></footer>
+<footer><img src="logo.webp" alt="Only Business"><p>Luanda, Viana, junto ao Alimenta Angola, Luanda Sul · 08:00–17:00<br>Chamadas 924 043 741 · WhatsApp 954 627 822</p><a href="#admin" style="color:#ffffff99">Admin</a></footer>
 <div id="dr"><aside id="da"></aside></div>
 <script>
 // ===== COLE AQUI os dados do seu projeto Supabase (Project Settings > API) =====
@@ -109,9 +109,18 @@ async function admin(){
  const d=c.data||cfg;
  $("v").innerHTML=`<main><div class="row"><h2>Painel admin</h2><button class="s" data-out>Sair</button></div>
  <div class="card"><h3>Tarifas</h3><label>Preço por km (Kz)</label><input id="k" value="${d.preco_km}"><label>Frete mínimo (Kz)</label><input id="mn" value="${d.frete_minimo}"><button class="p" data-cfg>Guardar</button></div>
+ <div class="card" style="margin-top:12px"><h3>Localização da loja</h3><p class="mu">Toque no mapa ou arraste o marcador para o ponto exato da loja (Viana, junto ao Alimenta Angola, Luanda Sul).</p><div id="ml" style="height:240px;border-radius:10px;z-index:0"></div><button class="p" data-loja style="margin-top:8px">Guardar localização</button></div>
  <h3>Novo produto</h3><div class="card"><label>Nome</label><input id="pn"><label>Descrição</label><textarea id="pd"></textarea><label>Preço (Kz)</label><input id="pp" inputmode="numeric"><label>Foto</label><input id="pf" type="file" accept="image/*"><button class="p" data-np>Adicionar</button></div>
  <h3>Produtos</h3>${p.data.map(x=>`<div class="card" style="margin-bottom:10px"><div class="row" style="justify-content:flex-start"><img src="${esc(img(x.imagem))}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px"><span>${esc(x.nome)}<br><b>${kz(x.preco)}</b> ${x.ativo?"":"(oculto)"}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><label class="s" style="color:var(--teal);border:1px solid var(--teal);border-radius:8px;padding:7px 12px;cursor:pointer;margin:0">Mudar foto<input type="file" accept="image/*" data-foto="${x.id}" hidden></label><button class="s" data-pr="${x.id}">Mudar preço</button><button class="s" data-tg="${x.id}|${x.ativo}">${x.ativo?"Ocultar":"Mostrar"}</button><button class="s" data-del="${x.id}">Apagar</button></div></div>`).join("")}
- <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}</div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`}
+ <h3>Pedidos</h3>${o.data.map(x=>`<div class="card" style="margin-bottom:10px"><b>${esc(x.nome)}</b> <span class="tag">${esc(x.estado)}</span><div class="mu">${esc(x.municipio)}, ${esc(x.bairro)}, ${esc(x.rua_casa)} · ${esc(x.telefone)} · <a href="https://maps.google.com/?q=${x.lat},${x.lng}" target="_blank">mapa</a></div><div>${x.itens.map(i=>i.qtd+"× "+esc(i.nome)).join(", ")}</div><div>Produtos ${kz(x.subtotal)} · frete ${kz(x.frete_final??x.frete_calculado)}${x.frete_proposto?" · proposta "+kz(x.frete_proposto):""}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${["Confirmado","Em entrega","Entregue","Cancelado"].map(s=>`<button class="s" data-st="${x.id}|${s}">${s}</button>`).join("")}${x.frete_proposto?`<button class="s" data-ac="${x.id}|${x.frete_proposto}">Aceitar proposta</button>`:""}</div></div>`).join("")||'<p class="mu">Sem pedidos.</p>'}</main>`;lojaMapa(d)}
+let lm=null,lp=null;
+function lojaMapa(d){const el=$("ml");if(!el||!window.L)return;if(lm){try{lm.remove()}catch(e){}}
+ lp={lat:d.loja_lat,lng:d.loja_lng};lm=L.map(el).setView([lp.lat,lp.lng],14);
+ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(lm);
+ const m=L.marker([lp.lat,lp.lng],{draggable:true}).addTo(lm);
+ m.on("dragend",()=>{const p=m.getLatLng();lp={lat:p.lat,lng:p.lng}});
+ lm.on("click",e=>{m.setLatLng(e.latlng);lp={lat:e.latlng.lat,lng:e.latlng.lng}});
+ setTimeout(()=>lm&&lm.invalidateSize(),250)}
 
 document.addEventListener("click",async e=>{const t=e.target.closest("button,a"),d=t&&t.dataset;if(!d)return;
  if(t.id=="bc"){$("dr").classList.add("on");carrinho()}
@@ -125,6 +134,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,a")
  if("send" in d)enviar();
  if("login" in d){const r=await sb.auth.signInWithPassword({email:$("ae").value,password:$("ap").value});r.error?$("am").textContent="Email ou palavra-passe incorretos.":admin()}
  if("out" in d){await sb.auth.signOut();admin()}
+ if("loja" in d&&lp){const r=await sb.from("definicoes").update({loja_lat:lp.lat,loja_lng:lp.lng}).eq("id",1);alert(r.error?"Não foi possível guardar.":"Localização da loja guardada.")}
  if("cfg" in d){await sb.from("definicoes").update({preco_km:+$("k").value,frete_minimo:+$("mn").value}).eq("id",1);admin()}
  if("np" in d){let path=null,f=$("pf").files[0];if(f){path=await subir(f);if(!path)return}
   await sb.from("produtos").insert({nome:$("pn").value,descricao:$("pd").value,preco:+$("pp").value,imagem:path});admin()}
