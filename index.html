@@ -109,8 +109,11 @@ document.addEventListener("click",async e=>{const t=e.target.closest("button,a")
  if(d.tg){const [i,a]=d.tg.split("|");await sb.from("produtos").update({ativo:a!="true"}).eq("id",i);admin()}
  if(d.st){const [i,s]=d.st.split("|");await sb.from("pedidos").update({estado:s}).eq("id",i);admin()}
  if(d.ac){const [i,v]=d.ac.split("|");await sb.from("pedidos").update({frete_final:+v,estado:"Confirmado"}).eq("id",i);admin()}});
-async function subir(f){try{const b=await createImageBitmap(f),k=Math.min(1,1000/Math.max(b.width,b.height)),c=document.createElement("canvas");c.width=b.width*k;c.height=b.height*k;c.getContext("2d").drawImage(b,0,0,c.width,c.height);
- const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.82)),p=Date.now()+".jpg",{error}=await sb.storage.from("produtos").upload(p,blob,{contentType:"image/jpeg"});if(error)throw error;return p}catch(e){alert("Não foi possível enviar a foto. Tente outra imagem.");return null}}
+async function subir(f){let blob=f,ext="jpg",ct=f.type||"image/jpeg";
+ try{const b=await createImageBitmap(f),k=Math.min(1,1000/Math.max(b.width,b.height)),c=document.createElement("canvas");c.width=b.width*k;c.height=b.height*k;c.getContext("2d").drawImage(b,0,0,c.width,c.height);blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.82));ct="image/jpeg"}catch(e){ext=((f.name||"").split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg"}
+ if(!blob){alert("Não foi possível preparar a foto.");return null}
+ const p=Date.now()+"."+ext,{error}=await sb.storage.from("produtos").upload(p,blob,{contentType:ct});
+ if(error){alert("Erro ao enviar a foto: "+(error.message||error));return null}return p}
 addEventListener("change",async e=>{const i=e.target.dataset&&e.target.dataset.foto;if(!i||!e.target.files[0])return;const p=await subir(e.target.files[0]);if(p){await sb.from("produtos").update({imagem:p}).eq("id",i);admin()}});
 const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash!="#produtos")rota()});rota();
 </script>
