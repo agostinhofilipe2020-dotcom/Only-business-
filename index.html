@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Only Business</title>
 <link rel="icon" href="logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#03474c">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Only Business">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -158,6 +164,7 @@ async function subir(f){let blob=f,ext="jpg",ct=f.type||"image/jpeg";
  if(error){alert("Erro ao enviar a foto: "+(error.message||error));return null}return p}
 addEventListener("change",async e=>{const i=e.target.dataset&&e.target.dataset.foto;if(!i||!e.target.files[0])return;const p=await subir(e.target.files[0]);if(p){await sb.from("produtos").update({imagem:p}).eq("id",i);admin()}});
 addEventListener("input",e=>{if(e.target.id=="of")atualizar()});
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 const rota=()=>location.hash=="#admin"?admin():loja();addEventListener("hashchange",()=>{if(location.hash!="#produtos")rota()});rota();
 </script>
 </body>
